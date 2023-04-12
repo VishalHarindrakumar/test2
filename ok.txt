@@ -1,0 +1,1383 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**************************************************************************KNAPSACK DYNAMIC PROGRAMMING *********************************************************************************
+
+#include <iostream>
+using namespace std;
+int max(int x, int y) {
+   return (x > y) ? x : y;
+}
+int knapSack(int W, int w[], int v[], int n) {
+   int i, wt;
+   int K[n + 1][W + 1];
+   for (i = 0; i <= n; i++) {
+      for (wt = 0; wt <= W; wt++) {
+         if (i == 0 || wt == 0)
+         K[i][wt] = 0;
+         else if (w[i - 1] <= wt)
+            K[i][wt] = max(v[i - 1] + K[i - 1][wt - w[i - 1]], K[i - 1][wt]);
+         else
+        K[i][wt] = K[i - 1][wt];
+      }
+   }
+   return K[n][W];
+}
+int main() {
+   cout << "Enter the number of items in a Knapsack:";
+   int n, W;
+   cin >> n;
+   int v[n], w[n];
+   for (int i = 0; i < n; i++) {
+      cout << "Enter value and weight for item " << i << ":";
+      cin >> v[i];
+      cin >> w[i];
+   }
+   cout << "Enter the capacity of knapsack";
+   cin >> W;
+   cout << knapSack(W, w, v, n);
+   return 0;
+}
+
+******************************************************************************MATRIX CHAIN DYYNAMIC PROGRAMMING***********************************************************************************
+
+// C++ program using memoization
+#include <bits/stdc++.h>
+using namespace std;
+int dp[100][100];
+
+// Function for matrix chain multiplication
+int matrixChainMemoised(int* p, int i, int j)
+{
+	if (i == j)
+	{
+		return 0;
+	}
+	if (dp[i][j] != -1)
+	{
+		return dp[i][j];
+	}
+	dp[i][j] = INT_MAX;
+	for (int k = i; k < j; k++)
+	{
+		dp[i][j] = min(
+			dp[i][j], matrixChainMemoised(p, i, k)
+					+ matrixChainMemoised(p, k + 1, j)
+					+ p[i - 1] * p[k] * p[j]);
+	}
+	return dp[i][j];
+}
+int MatrixChainOrder(int* p, int n)
+{
+	int i = 1, j = n - 1;
+	return matrixChainMemoised(p, i, j);
+}
+
+// Driver Code
+int main()
+{
+	int arr[] = { 1, 2, 3, 4 };
+	int n = sizeof(arr) / sizeof(arr[0]);
+	memset(dp, -1, sizeof dp);
+
+	cout << "Minimum number of multiplications is "
+		<< MatrixChainOrder(arr, n);
+}
+
+// This code is contributed by Sumit_Yadav
+
+***************************************************************************************LCS*****************************************************************************************************
+
+/* Dynamic Programming C/C++ implementation of LCS problem */
+#include <bits/stdc++.h>
+
+int max(int a, int b);
+
+/* Returns length of LCS for X[0..m-1], Y[0..n-1] */
+int lcs(char* X, char* Y, int m, int n)
+{
+	int L[m + 1][n + 1];
+	int i, j;
+
+	/* Following steps build L[m+1][n+1] in bottom up fashion. Note
+	that L[i][j] contains length of LCS of X[0..i-1] and Y[0..j-1] */
+	for (i = 0; i <= m; i++) {
+		for (j = 0; j <= n; j++) {
+			if (i == 0 || j == 0)
+				L[i][j] = 0;
+
+			else if (X[i - 1] == Y[j - 1])
+				L[i][j] = L[i - 1][j - 1] + 1;
+
+			else
+				L[i][j] = max(L[i - 1][j], L[i][j - 1]);
+		}
+	}
+
+	/* L[m][n] contains length of LCS for X[0..n-1] and Y[0..m-1] */
+	return L[m][n];
+}
+
+/* Utility function to get max of 2 integers */
+int max(int a, int b)
+{
+	return (a > b) ? a : b;
+}
+
+/* Driver program to test above function */
+int main()
+{
+	char X[] = "AGGTAB";
+	char Y[] = "GXTXAYB";
+
+	int m = strlen(X);
+	int n = strlen(Y);
+
+	printf("Length of LCS is %d\n", lcs(X, Y, m, n));
+
+	return 0;
+}
+
+***********************************LCS to print string and length***********************************
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Function to find the length of Longest Common Subsequence (LCS)
+// and also the LCS substring
+void findLCS(const string& str1, const string& str2) {
+    int m = str1.length();
+    int n = str2.length();
+
+    // Create a 2D array to store LCS lengths
+    int dp[m + 1][n + 1];
+
+    // Initialize the first row and first column with 0
+    for (int i = 0; i <= m; i++) {
+        for (int j = 0; j <= n; j++) {
+            if (i == 0 || j == 0) {
+                dp[i][j] = 0;
+            }
+        }
+    }
+
+    // Populate the dp table using dynamic programming
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (str1[i - 1] == str2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            } else {
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+
+    // Find the LCS substring
+    int lcsLength = dp[m][n];
+    string lcsString = "";
+    int i = m, j = n;
+    while (i > 0 && j > 0) {
+        if (str1[i - 1] == str2[j - 1]) {
+            lcsString = str1[i - 1] + lcsString;
+            i--;
+            j--;
+        } else {
+            if (dp[i - 1][j] > dp[i][j - 1]) {
+                i--;
+            } else {
+                j--;
+            }
+        }
+    }
+
+    cout << "Length of Longest Common Subsequence (LCS): " << lcsLength << endl;
+    cout << "Longest Common Subsequence (LCS): " << lcsString << endl;
+}
+
+int main() {
+    string str1, str2;
+
+    cout << "Enter the first string: ";
+    cin >> str1;
+    cout << "Enter the second string: ";
+    cin >> str2;
+
+    findLCS(str1, str2);
+
+    return 0;
+}
+
+*********************************************************************************     HUFFMAN CODE GREEDY      *********************************************************************************************
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct MinHeapNode {
+
+    char data;
+    unsigned freq;
+
+    MinHeapNode *left, *right;
+
+    MinHeapNode(char data, unsigned freq)
+
+    {
+
+        left = right = NULL;
+
+        this->data = data;
+
+        this->freq = freq;
+
+    }
+
+};
+
+struct compare {
+
+    bool operator()(MinHeapNode* l, MinHeapNode* r)
+    {
+
+        return (l->freq > r->freq);
+
+    }
+
+};
+
+void printCodes(struct MinHeapNode* root, string str)
+
+{
+
+ 
+
+    if (!root)
+
+        return;
+
+ 
+
+    if (root->data != '$')
+
+        cout << root->data << ": " << str << "\n";
+
+    printCodes(root->left, str + "0");
+
+    printCodes(root->right, str + "1");
+
+}
+
+
+void HuffmanCodes(char data[], int freq[], int size)
+
+{
+
+    struct MinHeapNode *left, *right, *top;
+
+
+    priority_queue<MinHeapNode*, vector<MinHeapNode*>,
+
+                   compare>
+
+        minHeap;
+
+    for (int i = 0; i < size; ++i)
+
+        minHeap.push(new MinHeapNode(data[i], freq[i]));
+
+
+    while (minHeap.size() != 1) {
+
+ 
+        left = minHeap.top();
+
+        minHeap.pop();
+
+ 
+
+        right = minHeap.top();
+
+        minHeap.pop();
+
+
+        top = new MinHeapNode('$',
+
+                              left->freq + right->freq);
+
+        top->left = left;
+
+        top->right = right;
+minHeap.push(top);
+
+    }
+printCodes(minHeap.top(), "");
+
+}
+int main()
+
+{
+		char arr[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
+    int freq[] = { 5, 9, 12, 13, 16, 45 };
+    int size = sizeof(arr) / sizeof(arr[0]);
+    HuffmanCodes(arr, freq, size);
+    return 0;
+
+}
+
+******************************************************************************   FRACTIONAL KNAPSACK GREEDY    ****************************************************************************************
+
+#include <bits/stdc++.h>
+using namespace std;
+
+// Structure for an item which stores weight and
+// corresponding value of Item
+struct Item {
+	int profit, weight;
+
+	// Constructor
+	Item(int profit, int weight)
+	{
+		this->profit = profit;
+		this->weight = weight;
+	}
+};
+
+static bool cmp(struct Item a, struct Item b)
+{
+	double r1 = (double)a.profit / (double)a.weight;
+	double r2 = (double)b.profit / (double)b.weight;
+	return r1 > r2;
+}
+
+// Main greedy function to solve problem
+double fractionalKnapsack(int W, struct Item arr[], int N)
+{
+	// Sorting Item on basis of ratio
+	sort(arr, arr + N, cmp);
+
+	double finalvalue = 0.0;
+
+	// Looping through all items
+	for (int i = 0; i < N; i++) {
+		
+		// If adding Item won't overflow,
+		// add it completely
+		if (arr[i].weight <= W) {
+			W -= arr[i].weight;
+			finalvalue += arr[i].profit;
+		}
+
+		// If we can't add current Item,
+		// add fractional part of it
+		else {
+			finalvalue
+				+= arr[i].profit
+				* ((double)W / (double)arr[i].weight);
+			break;
+		}
+	}
+
+	// Returning final value
+	return finalvalue;
+}
+
+// Driver code
+int main()
+{
+	int W = 50;
+	Item arr[] = { { 60, 10 }, { 100, 20 }, { 120, 30 } };
+	int N = sizeof(arr) / sizeof(arr[0]);
+
+	// Function call
+	cout << fractionalKnapsack(W, arr, N);
+	return 0;
+}
+
+**************************************************************************    STRING MATCHING ALGORITHM     ********************************************************************************************
+
+KMP ALGORITHM
+
+// C++ program for implementation of KMP pattern searching
+// algorithm
+#include <bits/stdc++.h>
+
+void computeLPSArray(char* pat, int M, int* lps);
+
+// Prints occurrences of txt[] in pat[]
+void KMPSearch(char* pat, char* txt)
+{
+	int M = strlen(pat);
+	int N = strlen(txt);
+
+	// create lps[] that will hold the longest prefix suffix
+	// values for pattern
+	int lps[M];
+
+	// Preprocess the pattern (calculate lps[] array)
+	computeLPSArray(pat, M, lps);
+
+	int i = 0; // index for txt[]
+	int j = 0; // index for pat[]
+	while ((N - i) >= (M - j)) {
+		if (pat[j] == txt[i]) {
+			j++;
+			i++;
+		}
+
+		if (j == M) {
+			printf("Found pattern at index %d ", i - j);
+			j = lps[j - 1];
+		}
+
+		// mismatch after j matches
+		else if (i < N && pat[j] != txt[i]) {
+			// Do not match lps[0..lps[j-1]] characters,
+			// they will match anyway
+			if (j != 0)
+				j = lps[j - 1];
+			else
+				i = i + 1;
+		}
+	}
+}
+
+// Fills lps[] for given pattern pat[0..M-1]
+void computeLPSArray(char* pat, int M, int* lps)
+{
+	// length of the previous longest prefix suffix
+	int len = 0;
+
+	lps[0] = 0; // lps[0] is always 0
+
+	// the loop calculates lps[i] for i = 1 to M-1
+	int i = 1;
+	while (i < M) {
+		if (pat[i] == pat[len]) {
+			len++;
+			lps[i] = len;
+			i++;
+		}
+		else // (pat[i] != pat[len])
+		{
+			// This is tricky. Consider the example.
+			// AAACAAAA and i = 7. The idea is similar
+			// to search step.
+			if (len != 0) {
+				len = lps[len - 1];
+
+				// Also, note that we do not increment
+				// i here
+			}
+			else // if (len == 0)
+			{
+				lps[i] = 0;
+				i++;
+			}
+		}
+	}
+}
+
+// Driver code
+int main()
+{
+	char txt[] = "ABABDABACDABABCABAB";
+	char pat[] = "ABABCABAB";
+	KMPSearch(pat, txt);
+	return 0;
+}
+
+***********************************************************************************       RABIN KARP STRING MATCHING      *********************************************************************************
+
+/* Following program is a C++ implementation of Rabin Karp
+Algorithm given in the CLRS book */
+#include <bits/stdc++.h>
+using namespace std;
+
+// d is the number of characters in the input alphabet
+#define d 256
+
+/* pat -> pattern
+	txt -> text
+	q -> A prime number
+*/
+void search(char pat[], char txt[], int q)
+{
+	int M = strlen(pat);
+	int N = strlen(txt);
+	int i, j;
+	int p = 0; // hash value for pattern
+	int t = 0; // hash value for txt
+	int h = 1;
+
+	// The value of h would be "pow(d, M-1)%q"
+	for (i = 0; i < M - 1; i++)
+		h = (h * d) % q;
+
+	// Calculate the hash value of pattern and first
+	// window of text
+	for (i = 0; i < M; i++) {
+		p = (d * p + pat[i]) % q;
+		t = (d * t + txt[i]) % q;
+	}
+
+	// Slide the pattern over text one by one
+	for (i = 0; i <= N - M; i++) {
+
+		// Check the hash values of current window of text
+		// and pattern. If the hash values match then only
+		// check for characters one by one
+		if (p == t) {
+			/* Check for characters one by one */
+			for (j = 0; j < M; j++) {
+				if (txt[i + j] != pat[j]) {
+					break;
+				}
+			}
+
+			// if p == t and pat[0...M-1] = txt[i, i+1,
+			// ...i+M-1]
+
+			if (j == M)
+				cout << "Pattern found at index " << i
+					<< endl;
+		}
+
+		// Calculate hash value for next window of text:
+		// Remove leading digit, add trailing digit
+		if (i < N - M) {
+			t = (d * (t - txt[i] * h) + txt[i + M]) % q;
+
+			// We might get negative value of t, converting
+			// it to positive
+			if (t < 0)
+				t = (t + q);
+		}
+	}
+}
+
+/* Driver code */
+int main()
+{
+	char txt[] = "GEEKS FOR GEEKS";
+	char pat[] = "GEEK";
+
+	// we mod to avoid overflowing of value but we should
+	// take as big q as possible to avoid the collison
+	int q = INT_MAX;
+
+	// Function Call
+	search(pat, txt, q);
+	return 0;
+}
+
+
+************************************************************************** STRING MATCHING USING NAIVE PATTERN ***********************************************************************8***********8
+// C++ program for Naive Pattern
+// Searching algorithm
+#include <bits/stdc++.h>
+using namespace std;
+
+void search(char* pat, char* txt)
+{
+	int M = strlen(pat);
+	int N = strlen(txt);
+
+	/* A loop to slide pat[] one by one */
+	for (int i = 0; i <= N - M; i++) {
+		int j;
+
+		/* For current index i, check for pattern match */
+		for (j = 0; j < M; j++)
+			if (txt[i + j] != pat[j])
+				break;
+
+		if (j
+			== M) // if pat[0...M-1] = txt[i, i+1, ...i+M-1]
+			cout << "Pattern found at index " << i << endl;
+	}
+}
+
+// Driver's Code
+int main()
+{
+	char txt[] = "AABAACAADAABAAABAA";
+	char pat[] = "AABA";
+
+	// Function call
+	search(pat, txt);
+	return 0;
+}
+
+// This code is contributed
+// by Akanksha Rai
+
+****************************************************************************  N QUEEN BACKTRACKING  ***************************************************************************************************
+
+/* C++ program to solve N Queen Problem using
+backtracking */
+
+#include <bits/stdc++.h>
+#define N 4
+using namespace std;
+
+/* A utility function to print solution */
+void printSolution(int board[N][N])
+{
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++)
+		if(board[i][j])
+			cout << "Q ";
+		else cout<<". ";
+		printf("\n");
+	}
+}
+bool isSafe(int board[N][N], int row, int col)
+{
+	int i, j;
+
+	/* Check this row on left side */
+	for (i = 0; i < col; i++)
+		if (board[row][i])
+			return false;
+
+	/* Check upper diagonal on left side */
+	for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
+		if (board[i][j])
+			return false;
+
+	/* Check lower diagonal on left side */
+	for (i = row, j = col; j >= 0 && i < N; i++, j--)
+		if (board[i][j])
+			return false;
+
+	return true;
+}
+
+/* A recursive utility function to solve N
+Queen problem */
+bool solveNQUtil(int board[N][N], int col)
+{
+	/* base case: If all queens are placed
+	then return true */
+	if (col >= N)
+		return true;
+
+	/* Consider this column and try placing
+	this queen in all rows one by one */
+	for (int i = 0; i < N; i++) {
+		/* Check if the queen can be placed on
+		board[i][col] */
+		if (isSafe(board, i, col)) {
+			/* Place this queen in board[i][col] */
+			board[i][col] = 1;
+
+			/* recur to place rest of the queens */
+			if (solveNQUtil(board, col + 1))
+				return true;
+
+			/* If placing queen in board[i][col]
+			doesn't lead to a solution, then
+			remove queen from board[i][col] */
+			board[i][col] = 0; // BACKTRACK
+		}
+	}
+
+	/* If the queen cannot be placed in any row in
+		this column col then return false */
+	return false;
+}
+bool solveNQ()
+{
+	int board[N][N] = { { 0, 0, 0, 0 },
+						{ 0, 0, 0, 0 },
+						{ 0, 0, 0, 0 },
+						{ 0, 0, 0, 0 } };
+
+	if (solveNQUtil(board, 0) == false) {
+		cout << "Solution does not exist";
+		return false;
+	}
+
+	printSolution(board);
+	return true;
+}
+
+// driver program to test above function
+int main()
+{
+	solveNQ();
+	return 0;
+}
+
+// This code is contributed by Aditya Kumar (adityakumar129)
+
+****************************************************************************************  RAT IN A MAZE  **********************************************************************************************
+
+// C++ program to solve Rat in a Maze problem using
+// backtracking
+#include <bits/stdc++.h>
+using namespace std;
+// Maze size
+#define N 4
+
+bool solveMazeUtil(int maze[N][N], int x, int y,int sol[N][N]);
+
+// A utility function to print solution matrix sol[N][N]
+void printSolution(int sol[N][N])
+{
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++)
+			cout<<" "<<sol[i][j]<<" ";
+		cout<<endl;
+	}
+}
+
+// A utility function to check if x, y is valid index for
+// N*N maze
+bool isSafe(int maze[N][N], int x, int y)
+{
+	// if (x, y outside maze) return false
+	if (x >= 0 && x < N && y >= 0 && y < N && maze[x][y] == 1)
+		return true;
+	return false;
+}
+
+bool solveMaze(int maze[N][N])
+{
+	int sol[N][N] = { { 0, 0, 0, 0 },
+					{ 0, 0, 0, 0 },
+					{ 0, 0, 0, 0 },
+					{ 0, 0, 0, 0 } };
+	if (solveMazeUtil(maze, 0, 0, sol) == false) {
+		cout<<"Solution doesn't exist";
+		return false;
+	}
+	printSolution(sol);
+	return true;
+}
+
+// A recursive utility function to solve Maze problem
+bool solveMazeUtil(int maze[N][N], int x, int y, int sol[N][N])
+{
+	// if (x, y is goal) return true
+	if (x == N - 1 && y == N - 1 && maze[x][y] == 1) {
+		sol[x][y] = 1;
+		return true;
+	}
+	// Check if maze[x][y] is valid
+	if (isSafe(maze, x, y) == true) {
+		// Check if the current block is already part of
+		// solution path.
+		if (sol[x][y] == 1)
+			return false;
+		// mark x, y as part of solution path
+		sol[x][y] = 1;
+		/* Move forward in x direction */
+		if (solveMazeUtil(maze, x + 1, y, sol) == true)
+			return true;
+		// If moving right didn't work
+		// move left
+		if (solveMazeUtil(maze, x - 1, y, sol) == true)
+			return true;
+		// If moving in x direction doesn't give solution
+		// then Move down in y direction
+		if (solveMazeUtil(maze, x, y + 1, sol) == true)
+			return true;
+		// If moving down didn't work
+		// move up
+		if (solveMazeUtil(maze, x, y - 1, sol) == true)
+			return true;
+		// If none of the above movements work then
+		// BACKTRACK: unmark x, y as part of solution path
+		sol[x][y] = 0;
+		return false;
+	}
+	return false;
+}
+
+// driver program to test above function
+int main()
+{
+	int maze[N][N] = { { 1, 0, 0, 0 },
+					{ 1, 1, 0, 1 },
+					{ 0, 1, 0, 0 },
+					{ 1, 1, 1, 1 } };
+	solveMaze(maze);
+	return 0;
+}
+
+// This code is contributed by Aditya Kumar (adityakumar129)
+// Changes made for N>4 by Ch. Abdul Wasay
+
+**********************************************************************************     MERGE SORT    **************************************************************************************************
+// C++ program for Merge Sort
+#include <iostream>
+using namespace std;
+
+// Merges two subarrays of array[].
+// First subarray is arr[begin..mid]
+// Second subarray is arr[mid+1..end]
+void merge(int array[], int const left, int const mid,
+		int const right)
+{
+	auto const subArrayOne = mid - left + 1;
+	auto const subArrayTwo = right - mid;
+
+	// Create temp arrays
+	auto *leftArray = new int[subArrayOne],
+		*rightArray = new int[subArrayTwo];
+
+	// Copy data to temp arrays leftArray[] and rightArray[]
+	for (auto i = 0; i < subArrayOne; i++)
+		leftArray[i] = array[left + i];
+	for (auto j = 0; j < subArrayTwo; j++)
+		rightArray[j] = array[mid + 1 + j];
+
+	auto indexOfSubArrayOne
+		= 0, // Initial index of first sub-array
+		indexOfSubArrayTwo
+		= 0; // Initial index of second sub-array
+	int indexOfMergedArray
+		= left; // Initial index of merged array
+
+	// Merge the temp arrays back into array[left..right]
+	while (indexOfSubArrayOne < subArrayOne
+		&& indexOfSubArrayTwo < subArrayTwo) {
+		if (leftArray[indexOfSubArrayOne]
+			<= rightArray[indexOfSubArrayTwo]) {
+			array[indexOfMergedArray]
+				= leftArray[indexOfSubArrayOne];
+			indexOfSubArrayOne++;
+		}
+		else {
+			array[indexOfMergedArray]
+				= rightArray[indexOfSubArrayTwo];
+			indexOfSubArrayTwo++;
+		}
+		indexOfMergedArray++;
+	}
+	// Copy the remaining elements of
+	// left[], if there are any
+	while (indexOfSubArrayOne < subArrayOne) {
+		array[indexOfMergedArray]
+			= leftArray[indexOfSubArrayOne];
+		indexOfSubArrayOne++;
+		indexOfMergedArray++;
+	}
+	// Copy the remaining elements of
+	// right[], if there are any
+	while (indexOfSubArrayTwo < subArrayTwo) {
+		array[indexOfMergedArray]
+			= rightArray[indexOfSubArrayTwo];
+		indexOfSubArrayTwo++;
+		indexOfMergedArray++;
+	}
+	delete[] leftArray;
+	delete[] rightArray;
+}
+
+// begin is for left index and end is
+// right index of the sub-array
+// of arr to be sorted */
+void mergeSort(int array[], int const begin, int const end)
+{
+	if (begin >= end)
+		return; // Returns recursively
+
+	auto mid = begin + (end - begin) / 2;
+	mergeSort(array, begin, mid);
+	mergeSort(array, mid + 1, end);
+	merge(array, begin, mid, end);
+}
+
+// UTILITY FUNCTIONS
+// Function to print an array
+void printArray(int A[], int size)
+{
+	for (auto i = 0; i < size; i++)
+		cout << A[i] << " ";
+}
+
+// Driver code
+int main()
+{
+	int arr[] = { 12, 11, 13, 5, 6, 7 };
+	auto arr_size = sizeof(arr) / sizeof(arr[0]);
+
+	cout << "Given array is \n";
+	printArray(arr, arr_size);
+
+	mergeSort(arr, 0, arr_size - 1);
+
+	cout << "\nSorted array is \n";
+	printArray(arr, arr_size);
+	return 0;
+}
+
+****************************************************************************  MAXIMUM SUM OF SUBARAY   **********************************************************************************************
+
+#include <bits/stdc++.h>
+using namespace std;
+
+// A utility function to find maximum of two integers
+int max(int a, int b) {
+	return (a > b) ? a : b;
+}
+
+// A utility function to find maximum of three integers
+int max(int a, int b, int c) {
+	return max(max(a, b), c);
+}
+
+// Find the maximum possible sum in arr[] such that arr[m]
+// is part of it
+int maxCrossingSum(int arr[], int l, int m, int h) {
+	// Include elements on left of mid.
+	int sum = 0;
+	int left_sum = INT_MIN;
+	for (int i = m; i >= l; i--) {
+		sum = sum + arr[i];
+		if (sum > left_sum)
+			left_sum = sum;
+	}
+
+	// Include elements on right of mid
+	sum = 0;
+	int right_sum = INT_MIN;
+	for (int i = m; i <= h; i++) {
+		sum = sum + arr[i];
+		if (sum > right_sum)
+			right_sum = sum;
+	}
+
+	// Return sum of elements on left and right of mid
+	// returning only left_sum + right_sum will fail for
+	// [-2, 1]
+	return max(left_sum + right_sum - arr[m], left_sum, right_sum);
+}
+
+// Returns sum of maximum sum subarray in aa[l..h]
+int maxSubArraySum(int arr[], int l, int h) {
+	// Invalid Range: low is greater than high
+	if (l > h)
+		return INT_MIN;
+	// Base Case: Only one element
+	if (l == h)
+		return arr[l];
+
+	// Find middle point
+	int m = (l + h) / 2;
+
+	/* Return maximum of following three possible cases
+			a) Maximum subarray sum in left half
+			b) Maximum subarray sum in right half
+			c) Maximum subarray sum such that the subarray
+	crosses the midpoint */
+	return max(maxSubArraySum(arr, l, m - 1),
+			maxSubArraySum(arr, m + 1, h),
+			maxCrossingSum(arr, l, m, h));
+}
+
+/*Driver program to test maxSubArraySum*/
+int main() {
+	int arr[] = { 2, 3, 4, 5, 7 };
+	int n = sizeof(arr) / sizeof(arr[0]);
+	int max_sum = maxSubArraySum(arr, 0, n - 1);
+	cout << "Maximum contiguous sum is " << max_sum;
+	return 0;
+}
+
+SHORTETEST PATH
+FLOYD WARSHALL
+
+ 
+
+// Floyd-Warshall Algorithm in C++
+
+ 
+
+#include <iostream>
+using namespace std;
+
+ 
+
+// defining the number of vertices
+#define nV 4
+
+ 
+
+#define INF 999
+
+ 
+
+void printMatrix(int matrix[][nV]);
+
+ 
+
+// Implementing floyd warshall algorithm
+void floydWarshall(int graph[][nV]) {
+  int matrix[nV][nV], i, j, k;
+
+ 
+
+  for (i = 0; i < nV; i++)
+    for (j = 0; j < nV; j++)
+      matrix[i][j] = graph[i][j];
+
+ 
+
+  // Adding vertices individually
+  for (k = 0; k < nV; k++) {
+    for (i = 0; i < nV; i++) {
+      for (j = 0; j < nV; j++) {
+        if (matrix[i][k] + matrix[k][j] < matrix[i][j])
+          matrix[i][j] = matrix[i][k] + matrix[k][j];
+      }
+    }
+  }
+  printMatrix(matrix);
+}
+
+ 
+
+void printMatrix(int matrix[][nV]) {
+  for (int i = 0; i < nV; i++) {
+    for (int j = 0; j < nV; j++) {
+      if (matrix[i][j] == INF)
+        printf("%4s", "INF");
+      else
+        printf("%4d", matrix[i][j]);
+    }
+    printf("\n");
+  }
+}
+
+ 
+
+int main() {
+  int graph[nV][nV] = {{0, 3, INF, 5},
+             {2, 0, INF, 4},
+             {INF, 1, 0, INF},
+             {INF, INF, 2, 0}};
+  floydWarshall(graph);
+}
+
+// Bellman Ford Algorithm in C++
+
+ 
+
+#include <bits/stdc++.h>
+
+ 
+
+// Struct for the edges of the graph
+struct Edge {
+  int u;  //start vertex of the edge
+  int v;  //end vertex of the edge
+  int w;  //w of the edge (u,v)
+};
+
+ 
+
+// Graph - it consists of edges
+struct Graph {
+  int V;        // Total number of vertices in the graph
+  int E;        // Total number of edges in the graph
+  struct Edge* edge;  // Array of edges
+};
+
+ 
+
+// Creates a graph with V vertices and E edges
+struct Graph* createGraph(int V, int E) {
+  struct Graph* graph = new Graph;
+  graph->V = V;  // Total Vertices
+  graph->E = E;  // Total edges
+
+ 
+
+  // Array of edges for graph
+  graph->edge = new Edge[E];
+  return graph;
+}
+
+ 
+
+// Printing the solution
+void printArr(int arr[], int size) {
+  int i;
+  for (i = 0; i < size; i++) {
+    printf("%d ", arr[i]);
+  }
+  printf("\n");
+}
+
+ 
+
+void BellmanFord(struct Graph* graph, int u) {
+  int V = graph->V;
+  int E = graph->E;
+  int dist[V];
+
+ 
+
+  // Step 1: fill the distance array and predecessor array
+  for (int i = 0; i < V; i++)
+    dist[i] = INT_MAX;
+
+ 
+
+  // Mark the source vertex
+  dist[u] = 0;
+
+ 
+
+  // Step 2: relax edges |V| - 1 times
+  for (int i = 1; i <= V - 1; i++) {
+    for (int j = 0; j < E; j++) {
+      // Get the edge data
+      int u = graph->edge[j].u;
+      int v = graph->edge[j].v;
+      int w = graph->edge[j].w;
+      if (dist[u] != INT_MAX && dist[u] + w < dist[v])
+        dist[v] = dist[u] + w;
+    }
+  }
+
+ 
+
+  // Step 3: detect negative cycle
+  // if value changes then we have a negative cycle in the graph
+  // and we cannot find the shortest distances
+  for (int i = 0; i < E; i++) {
+    int u = graph->edge[i].u;
+    int v = graph->edge[i].v;
+    int w = graph->edge[i].w;
+    if (dist[u] != INT_MAX && dist[u] + w < dist[v]) {
+      printf("Graph contains negative w cycle");
+      return;
+    }
+  }
+
+ 
+
+  // No negative weight cycle found!
+  // Print the distance and predecessor array
+  printArr(dist, V);
+
+ 
+
+  return;
+}
+
+ 
+
+int main() {
+  // Create a graph
+  int V = 5;  // Total vertices
+  int E = 8;  // Total edges
+
+ 
+
+  // Array of edges for graph
+  struct Graph* graph = createGraph(V, E);
+
+ 
+
+  //------- adding the edges of the graph
+  /*
+        edge(u, v)
+        where     u = start vertex of the edge (u,v)
+                v = end vertex of the edge (u,v)
+
+        w is the weight of the edge (u,v)
+    */
+
+ 
+
+  //edge 0 --> 1
+  graph->edge[0].u = 0;
+  graph->edge[0].v = 1;
+  graph->edge[0].w = 5;
+
+ 
+
+  //edge 0 --> 2
+  graph->edge[1].u = 0;
+  graph->edge[1].v = 2;
+  graph->edge[1].w = 4;
+
+ 
+
+  //edge 1 --> 3
+  graph->edge[2].u = 1;
+  graph->edge[2].v = 3;
+  graph->edge[2].w = 3;
+
+ 
+
+  //edge 2 --> 1
+  graph->edge[3].u = 2;
+  graph->edge[3].v = 1;
+  graph->edge[3].w = 6;
+
+ 
+
+  //edge 3 --> 2
+  graph->edge[4].u = 3;
+  graph->edge[4].v = 2;
+  graph->edge[4].w = 2;
+
+ 
+
+  BellmanFord(graph, 0);  //0 is the source vertex
+
+*********************************************************************************************************
+
+Subset sum
+
+    /* Part of Cosmos by OpenGenus Foundation */
+    #include<iostream>
+    using namespace std;
+    /*
+    *Find whether or not there exists any subset 
+    *  of array  that sum up to targetSum
+    */
+    class Subset_Sum
+    {
+        public:
+        // BACKTRACKING ALGORITHM
+        void subsetsum_Backtracking(int Set[] , int pos, int sum, int tmpsum, int size, bool & found)
+        {
+            if (sum == tmpsum)
+                found = true;
+                // generate nodes along the breadth
+            for (int i = pos; i < size; i++)
+            {
+             if (tmpsum + Set[i] <= sum)
+               {
+                  tmpsum += Set[i];   
+                  // consider next level node (along depth)
+                  subsetsum_Backtracking(Set, i + 1, sum, tmpsum, size, found);
+                  tmpsum -= Set[i];
+                }
+            }
+        }
+    };
+    
+    int main()
+    {
+        int i, n, sum;
+        Subset_Sum S;
+        cout << "Enter the number of elements in the set" << endl;
+        cin >> n;
+        int a[n];
+        cout << "Enter the values" << endl;
+        for(i=0;i<n;i++)
+          cin>>a[i];
+        cout << "Enter the value of sum" << endl;
+        cin >> sum;
+        bool f = false;
+        S.subsetsum_Backtracking(a, 0, sum, 0, n, f);
+        if (f)
+           cout << "subset with the given sum found" << endl;
+        else
+           cout << "no required subset found" << endl;   
+        return 0;
+    }
+
+
+*********************************************************************************************************

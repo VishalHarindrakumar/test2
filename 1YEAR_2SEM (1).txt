@@ -1,0 +1,564 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <bits/stdc++.h>
+using namespace std;
+
+void printMaxActivities(int s[], int f[], int n)
+{
+	int i, j;
+
+	cout << "Following activities are selected" << endl;
+
+	i = 0;
+	cout << i << " ";
+
+	for (j = 1; j < n; j++) {
+		if (s[j] >= f[i]) {
+			cout << j << " ";
+			i = j;
+		}
+	}
+}
+
+int main()
+{
+	int s[] = { 1, 3, 0, 5, 8, 5 };
+	int f[] = { 2, 4, 6, 7, 9, 9 };
+	int n = sizeof(s) / sizeof(s[0]);
+
+	printMaxActivities(s, f, n);
+	return 0;
+}
+
+-----------------------------------------
+matrixfat:
+#include <bits/stdc++.h>
+using namespace std;
+int dp[100][100];
+
+// Function for matrix chain multiplication
+int matrixChainMemoised(int* p, int i, int j)
+{
+	if (i == j)
+	{
+		return 0;
+	}
+	if (dp[i][j] != -1)
+	{
+		return dp[i][j];
+	}
+	dp[i][j] = INT_MAX;
+	for (int k = i; k < j; k++)
+	{
+		dp[i][j] = min(
+			dp[i][j], matrixChainMemoised(p, i, k)
+					+ matrixChainMemoised(p, k + 1, j)
+					+ p[i - 1] * p[k] * p[j]);
+	}
+	return dp[i][j];
+}
+int MatrixChainOrder(int* p, int n)
+{
+	int i = 1, j = n - 1;
+	return matrixChainMemoised(p, i, j);
+}
+
+// Driver Code
+int main()
+{
+	int arr[] = { 1, 2, 3, 4 };
+	int n = sizeof(arr) / sizeof(arr[0]);
+	memset(dp, -1, sizeof dp);
+
+	cout << "Minimum number of multiplications is "
+		<< MatrixChainOrder(arr, n);
+}
+
+-----------------------------------------------------
+01 kp:
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int knapSackRec(int W, int wt[], int val[], int i, int** dp)
+{
+	if (i < 0)
+		return 0;
+	if (dp[i][W] != -1)
+		return dp[i][W];
+
+	if (wt[i] > W) {
+
+		dp[i][W] = knapSackRec(W, wt, val, i - 1, dp);
+		return dp[i][W];
+	}
+	else {
+		dp[i][W] = max(val[i]
+						+ knapSackRec(W - wt[i], wt, val,
+										i - 1, dp),
+					knapSackRec(W, wt, val, i - 1, dp));
+
+		return dp[i][W];
+	}
+}
+
+int knapSack(int W, int wt[], int val[], int n)
+{
+	int** dp;
+	dp = new int*[n];
+
+	for (int i = 0; i < n; i++)
+		dp[i] = new int[W + 1];
+
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < W + 1; j++)
+			dp[i][j] = -1;
+	return knapSackRec(W, wt, val, n - 1, dp);
+}
+
+int main()
+{
+	int profit[] = { 60, 100, 120 };
+	int weight[] = { 10, 20, 30 };
+	int W = 50;
+	int n = sizeof(profit) / sizeof(profit[0]);
+	cout << knapSack(W, weight, profit, n);
+	return 0;
+}
+-----------------------------------------
+maxsum
+#include <bits/stdc++.h>
+using namespace std;
+
+int max(int a, int b) {
+	return (a > b) ? a : b;
+}
+
+int max(int a, int b, int c) {
+	return max(max(a, b), c);
+}
+
+int maxCrossingSum(int arr[], int l, int m, int h) {
+	int sum = 0;
+	int left_sum = INT_MIN;
+	for (int i = m; i >= l; i--) {
+		sum = sum + arr[i];
+		if (sum > left_sum)
+			left_sum = sum;
+	}
+
+	sum = 0;
+	int right_sum = INT_MIN;
+	for (int i = m; i <= h; i++) {
+		sum = sum + arr[i];
+		if (sum > right_sum)
+			right_sum = sum;
+	}
+
+	return max(left_sum + right_sum - arr[m], left_sum, right_sum);
+}
+
+int maxSubArraySum(int arr[], int l, int h) {
+	if (l > h)
+		return INT_MIN;
+	if (l == h)
+		return arr[l];
+
+	int m = (l + h) / 2;
+
+	return max(maxSubArraySum(arr, l, m - 1),
+			maxSubArraySum(arr, m + 1, h),
+			maxCrossingSum(arr, l, m, h));
+}
+
+/*Driver program to test maxSubArraySum*/
+int main() {
+	int arr[] = { 2, 3, 4, 5, 7 };
+	int n = sizeof(arr) / sizeof(arr[0]);
+	int max_sum = maxSubArraySum(arr, 0, n - 1);
+	cout << "Maximum contiguous sum is " << max_sum;
+	return 0;
+}
+------------------------------------------
+rabin:
+#include <iostream>
+#include <string>
+using namespace std;
+
+#define d 256
+
+void search(string pattern, string text, int q) {
+    int M = pattern.length();
+    int N = text.length();
+    int p = 0;  // hash value for pattern
+    int t = 0;  // hash value for text
+    int h = 1;
+    int i, j;
+  
+    for (i = 0; i < M; i++) {
+        p = (d * p + pattern[i]) % q;
+        t = (d * t + text[i]) % q;
+    }
+
+    for (i = 0; i < M-1; i++) {
+        h = (h * d) % q;
+    }
+
+    for (i = 0; i <= N - M; i++) {
+        if (p == t) {
+            for (j = 0; j < M; j++) {
+                if (text[i+j] != pattern[j])
+                    break;
+            }
+            if (j == M) {
+                cout << "Pattern found at index " << i << endl;
+            }
+        }
+        if (i < N-M) {
+            t = (d*(t - text[i]*h) + text[i+M])%q;
+            if (t < 0) {
+                t = (t + q);
+            }
+        }
+    }
+}
+
+int main() {
+    string text = "AABAACAADAABAABA";
+    string pattern = "AABA";
+    int q = 101;  // a prime number for hashing
+    search(pattern, text, q);
+    return 0;
+}
+--------------------------------------
+floyd:
+#include <iostream>
+#include <vector>
+using namespace std;
+
+#define INF 999999
+
+void floydWarshall(vector<vector<int>>& graph, int V) {
+    vector<vector<int>> dist(V, vector<int>(V));
+
+    
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            dist[i][j] = graph[i][j];
+        }
+    }
+
+    // Calculate the shortest path between all pairs of vertices
+    for (int k = 0; k < V; k++) {
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                if (dist[i][k] != INF && dist[k][j] != INF && dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+    }
+
+    // Print the shortest distances
+    cout << "Shortest distances between all pairs of vertices:" << endl;
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            if (dist[i][j] == INF) {
+                cout << "INF" << "\t";
+            } else {
+                cout << dist[i][j] << "\t";
+            }
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    int V = 4;  // number of vertices in the graph
+    vector<vector<int>> graph = {{0, 5, INF, 10},
+                                 {INF, 0, 3, INF},
+                                 {INF, INF, 0, 1},
+                                 {INF, INF, INF, 0}};
+
+    floydWarshall(graph, V);
+
+    return 0;
+}
+-------------------------------------
+ford:
+#include <iostream>
+#include <limits.h>
+#include <queue>
+#include <string.h>
+#include<vector>
+using namespace std;
+void print_graph(vector<vector<int> >);
+bool find_Path_From_Source_BFS(vector<vector<int> > residual_graph, int s, int t, int parents[])
+{
+	int num_vertices = residual_graph.size();
+	vector<bool> visited(false,num_vertices);
+	
+
+	queue<int> q;
+	cout<<"BFS called"<<endl;
+	cout<<s<<" ";
+	q.push(s);
+	visited[s] = true;
+	parents[s] = -1;
+
+	while (!q.empty()) {
+		int u = q.front();
+		q.pop();
+
+		for (int v = 0; v < num_vertices; v++) {
+			if (visited[v] == false && residual_graph[u][v] > 0) {
+				if (v == t) {
+					parents[v] = u;
+					cout<<endl;
+					return true;
+				}
+				cout<<v<<" ";
+				q.push(v);
+				parents[v] = u;
+				visited[v] = true;
+			}
+		}
+	}
+
+	cout<<endl;
+	return false;
+}
+
+int fordFulkerson(vector<vector<int> > graph)
+{
+	int s, t,i,j,u,v,num_vertices;
+	s = 0;
+	t = graph.size()-1;
+	vector<vector<int> > residual_graph(graph);
+	num_vertices = residual_graph.size();
+	
+
+	int parents[num_vertices]; // This array is filled by BFS and to
+
+	int max_flow = 0; // There is no flow initially
+
+	while (find_Path_From_Source_BFS(residual_graph, s, t, parents)) {
+		int path_flow = INT_MAX;
+		
+		for (v = t; v != s; v = parents[v]) {
+			cout<<v<<" ";
+			u = parents[v];
+			path_flow = min(path_flow, residual_graph[u][v]);
+		}
+		cout<<endl;
+		for (v = t; v != s; v = parents[v]) {
+			u = parents[v];
+			residual_graph[u][v] -= path_flow;
+			residual_graph[v][u] += path_flow;
+		}
+
+		max_flow += path_flow;
+	}
+
+	return max_flow;
+}
+
+void read_graph(vector<vector<int> > &graph, int num_vertices)
+{
+	int i,j,wt;
+	for(i=0;i<num_vertices;i++)
+	{
+		vector<int> vertex;
+		for(j=0;j<num_vertices;j++)
+		{
+			cin>>wt;
+			vertex.push_back(wt);
+		}
+		graph.push_back(vertex);
+	}
+}
+void print_graph(const vector<vector<int> > graph)
+{
+	int i,j,num_vertices;
+	num_vertices = graph.size();
+	for(i=0;i<num_vertices;i++)
+	{
+		for(j=0;j<num_vertices;j++)
+		{
+			cout<<graph[i][j]<<" ";
+		}
+		cout<<endl;
+	}
+}
+int main()
+{
+	int num_vertices;
+	vector<vector<int> > graph;
+	
+	cin>>num_vertices;
+	read_graph(graph,num_vertices);
+	cout << "The maximum possible flow is "<<fordFulkerson(graph);
+
+	return 0;
+}
+
+------------------------------------------------
+quicksort:
+
+#include <cstdlib>
+#include <time.h>
+#include <iostream>
+using namespace std;
+
+int partition(int arr[], int low, int high)
+{
+	
+	int pivot = arr[high];
+
+	/
+	int i = (low - 1);
+
+	for (int j = low; j <= high - 1; j++)
+	{
+		// If current element is smaller
+		// than or equal to pivot
+		if (arr[j] <= pivot) {
+
+			// increment index of
+			// smaller element
+			i++;
+			swap(arr[i], arr[j]);
+		}
+	}
+	swap(arr[i + 1], arr[high]);
+	return (i + 1);
+}
+
+// Generates Random Pivot, swaps pivot with
+// end element and calls the partition function
+int partition_r(int arr[], int low, int high)
+{
+	// Generate a random number in between
+	// low .. high
+	srand(time(NULL));
+	int random = low + rand() % (high - low);
+
+	// Swap A[random] with A[high]
+	swap(arr[random], arr[high]);
+
+	return partition(arr, low, high);
+}
+
+/* The main function that implements
+QuickSort
+arr[] --> Array to be sorted,
+low --> Starting index,
+high --> Ending index */
+void quickSort(int arr[], int low, int high)
+{
+	if (low < high) {
+
+		/* pi is partitioning index,
+		arr[p] is now
+		at right place */
+		int pi = partition_r(arr, low, high);
+
+		// Separately sort elements before
+		// partition and after partition
+		quickSort(arr, low, pi - 1);
+		quickSort(arr, pi + 1, high);
+	}
+}
+
+/* Function to print an array */
+void printArray(int arr[], int size)
+{
+	int i;
+	for (i = 0; i < size; i++)
+		cout<<arr[i]<<" ";
+}
+
+// Driver Code
+int main()
+{
+	int arr[] = { 10, 7, 8, 9, 1, 5 };
+	int n = sizeof(arr) / sizeof(arr[0]);
+	
+	quickSort(arr, 0, n - 1);
+	printf("Sorted array: \n");
+	printArray(arr, n);
+	
+	return 0;
+}
+
