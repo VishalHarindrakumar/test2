@@ -1,0 +1,496 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void printMaxActivities(int s[], int f[], int n)
+{
+	int i, j;
+
+	cout << "Following activities are selected" << endl;
+
+	i = 0;
+	cout << i << " ";
+
+	for (j = 1; j < n; j++) {
+		if (s[j] >= f[i]) {
+			cout << j << " ";
+			i = j;
+		}
+	}
+}
+
+int main()
+{
+	int s[] = { 1, 3, 0, 5, 8, 5 };
+	int f[] = { 2, 4, 6, 7, 9, 9 };
+	int n = sizeof(s) / sizeof(s[0]);
+
+	printMaxActivities(s, f, n);
+	return 0;
+}
+-------------------------------------------------------
+matrix:
+#include <iostream>
+#include <climits>
+using namespace std;
+
+int matrixChainOrder(int p[], int n)
+{
+    int m[n][n];
+
+    for (int i = 1; i < n; i++)
+        m[i][i] = 0;
+
+    for (int L = 2; L < n; L++)
+    {
+        for (int i = 1; i < n - L + 1; i++)
+        {
+            int j = i + L - 1;
+            m[i][j] = INT_MAX;
+            for (int k = i; k <= j - 1; k++)
+            {
+                int q = m[i][k] + m[k + 1][j] + p[i - 1] * p[k] * p[j];
+                if (q < m[i][j])
+                    m[i][j] = q;
+            }
+        }
+    }
+
+    return m[1][n - 1];
+}
+
+int main()
+{
+    int arr[] = { 10, 20, 30, 40, 30 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    cout << "Minimum number of multiplications is "
+         << matrixChainOrder(arr, n);
+
+    return 0;
+}
+----------------------------------------
+01kp:
+#include <bits/stdc++.h>
+using namespace std;
+
+int knapsack(int W, int wt[], int val[], int n) {
+    int K[n+1][W+1];
+ 
+    for (int i = 0; i <= n; i++) {
+        for (int w = 0; w <= W; w++) {
+            if (i == 0 || w == 0) {
+                K[i][w] = 0;
+            }
+            else if (wt[i-1] <= w) {
+                K[i][w] = max(val[i-1] + K[i-1][w-wt[i-1]], K[i-1][w]);
+            }
+            else {
+                K[i][w] = K[i-1][w];
+            }
+        }
+    }
+ 
+    return K[n][W];
+}
+
+int main() {
+    int val[] = {60, 100, 120};
+    int wt[] = {10, 20, 30};
+    int W = 50;
+    int n = sizeof(val)/sizeof(val[0]);
+    cout << knapsack(W, wt, val, n) << endl;
+    return 0;
+}
+-------------------------------------------
+maxsum:
+#include <bits/stdc++.h>
+using namespace std;
+
+int max(int a, int b) {
+	return (a > b) ? a : b;
+}
+
+int max(int a, int b, int c) {
+	return max(max(a, b), c);
+}
+
+int maxCrossingSum(int arr[], int l, int m, int h) {
+	int sum = 0;
+	int left_sum = INT_MIN;
+	for (int i = m; i >= l; i--) {
+		sum = sum + arr[i];
+		if (sum > left_sum)
+			left_sum = sum;
+	}
+
+	sum = 0;
+	int right_sum = INT_MIN;
+	for (int i = m; i <= h; i++) {
+		sum = sum + arr[i];
+		if (sum > right_sum)
+			right_sum = sum;
+	}
+
+	return max(left_sum + right_sum - arr[m], left_sum, right_sum);
+}
+
+int maxSubArraySum(int arr[], int l, int h) {
+	if (l > h)
+		return INT_MIN;
+	if (l == h)
+		return arr[l];
+
+	int m = (l + h) / 2;
+
+	return max(maxSubArraySum(arr, l, m - 1),
+			maxSubArraySum(arr, m + 1, h),
+			maxCrossingSum(arr, l, m, h));
+}
+
+/*Driver program to test maxSubArraySum*/
+int main() {
+	int arr[] = { 2, 3, 4, 5, 7 };
+	int n = sizeof(arr) / sizeof(arr[0]);
+	int max_sum = maxSubArraySum(arr, 0, n - 1);
+	cout << "Maximum contiguous sum is " << max_sum;
+	return 0;
+}
+---------------------------------------
+rabin:
+#include <iostream>
+#include <string>
+using namespace std;
+
+#define d 256
+
+void search(string pattern, string text, int q) {
+    int M = pattern.length();
+    int N = text.length();
+    int p = 0;  // hash value for pattern
+    int t = 0;  // hash value for text
+    int h = 1;
+    int i, j;
+  
+    for (i = 0; i < M; i++) {
+        p = (d * p + pattern[i]) % q;
+        t = (d * t + text[i]) % q;
+    }
+
+    for (i = 0; i < M-1; i++) {
+        h = (h * d) % q;
+    }
+
+    for (i = 0; i <= N - M; i++) {
+        if (p == t) {
+            for (j = 0; j < M; j++) {
+                if (text[i+j] != pattern[j])
+                    break;
+            }
+            if (j == M) {
+                cout << "Pattern found at index " << i << endl;
+            }
+        }
+        if (i < N-M) {
+            t = (d*(t - text[i]*h) + text[i+M])%q;
+            if (t < 0) {
+                t = (t + q);
+            }
+        }
+    }
+}
+
+int main() {
+    string text = "AABAACAADAABAABA";
+    string pattern = "AABA";
+    int q = 101;  // a prime number for hashing
+    search(pattern, text, q);
+    return 0;
+}
+
+----------------------------------------------
+ford:
+#include <iostream>
+#include <queue>
+#include <cstring>
+using namespace std;
+
+const int MAXN = 1005; // maximum number of nodes
+int n, m; // number of nodes and edges
+int cap[MAXN][MAXN], flow[MAXN][MAXN]; // capacity and flow
+int parent[MAXN]; // parent of each node
+
+// Breadth-first search to find an augmenting path
+bool bfs(int s, int t) {
+    queue<int> q;
+    q.push(s);
+    memset(parent, -1, sizeof(parent));
+    parent[s] = -2;
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        for (int v = 0; v < n; v++) {
+            if (parent[v] == -1 && cap[u][v] - flow[u][v] > 0) {
+                parent[v] = u;
+                if (v == t) return true;
+                q.push(v);
+            }
+        }
+    }
+
+    return false;
+}
+
+// Ford-Fulkerson algorithm
+int maxflow(int s, int t) {
+    int totalFlow = 0;
+
+    while (bfs(s, t)) {
+        int pathFlow = INT_MAX;
+
+        // find bottleneck capacity
+        for (int v = t; v != s; v = parent[v]) {
+            int u = parent[v];
+            pathFlow = min(pathFlow, cap[u][v] - flow[u][v]);
+        }
+
+        // update flow
+        for (int v = t; v != s; v = parent[v]) {
+            int u = parent[v];
+            flow[u][v] += pathFlow;
+            flow[v][u] -= pathFlow;
+        }
+
+        totalFlow += pathFlow;
+    }
+
+    return totalFlow;
+}
+
+int main() {
+    // read input
+    cin >> n >> m;
+    for (int i = 0; i < m; i++) {
+        int u, v, c;
+        cin >> u >> v >> c;
+        cap[u][v] += c; // add to residual graph
+    }
+
+    int s, t;
+    cin >> s >> t;
+
+    // find maximum flow
+    int ans = maxflow(s, t);
+
+    cout << "Maximum flow from " << s << " to " << t << " is " << ans << endl;
+
+    return 0;
+}
+--------------------------------------------
+floyd:
+#include <iostream>
+#include <vector>
+using namespace std;
+
+#define INF 999999
+
+void floydWarshall(vector<vector<int>>& graph, int V) {
+    vector<vector<int>> dist(V, vector<int>(V));
+
+    // Initialize the distance matrix to be the same as the input graph
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            dist[i][j] = graph[i][j];
+        }
+    }
+
+    // Calculate the shortest path between all pairs of vertices
+    for (int k = 0; k < V; k++) {
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                if (dist[i][k] != INF && dist[k][j] != INF && dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+    }
+
+    // Print the shortest distances
+    cout << "Shortest distances between all pairs of vertices:" << endl;
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            if (dist[i][j] == INF) {
+                cout << "INF" << "\t";
+            } else {
+                cout << dist[i][j] << "\t";
+            }
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    int V = 4;  // number of vertices in the graph
+    vector<vector<int>> graph = {{0, 5, INF, 10},
+                                 {INF, 0, 3, INF},
+                                 {INF, INF, 0, 1},
+                                 {INF, INF, INF, 0}};
+
+    floydWarshall(graph, V);
+
+    return 0;
+}
+-----------------------------------
+quicksort:
+
+#include <cstdlib>
+#include <time.h>
+#include <iostream>
+using namespace std;
+
+int partition(int arr[], int low, int high)
+{
+	
+	int pivot = arr[high];
+
+	/
+	int i = (low - 1);
+
+	for (int j = low; j <= high - 1; j++)
+	{
+		// If current element is smaller
+		// than or equal to pivot
+		if (arr[j] <= pivot) {
+
+			// increment index of
+			// smaller element
+			i++;
+			swap(arr[i], arr[j]);
+		}
+	}
+	swap(arr[i + 1], arr[high]);
+	return (i + 1);
+}
+
+// Generates Random Pivot, swaps pivot with
+// end element and calls the partition function
+int partition_r(int arr[], int low, int high)
+{
+	// Generate a random number in between
+	// low .. high
+	srand(time(NULL));
+	int random = low + rand() % (high - low);
+
+	// Swap A[random] with A[high]
+	swap(arr[random], arr[high]);
+
+	return partition(arr, low, high);
+}
+
+/* The main function that implements
+QuickSort
+arr[] --> Array to be sorted,
+low --> Starting index,
+high --> Ending index */
+void quickSort(int arr[], int low, int high)
+{
+	if (low < high) {
+
+		/* pi is partitioning index,
+		arr[p] is now
+		at right place */
+		int pi = partition_r(arr, low, high);
+
+		// Separately sort elements before
+		// partition and after partition
+		quickSort(arr, low, pi - 1);
+		quickSort(arr, pi + 1, high);
+	}
+}
+
+/* Function to print an array */
+void printArray(int arr[], int size)
+{
+	int i;
+	for (i = 0; i < size; i++)
+		cout<<arr[i]<<" ";
+}
+
+// Driver Code
+int main()
+{
+	int arr[] = { 10, 7, 8, 9, 1, 5 };
+	int n = sizeof(arr) / sizeof(arr[0]);
+	
+	quickSort(arr, 0, n - 1);
+	printf("Sorted array: \n");
+	printArray(arr, n);
+	
+	return 0;
+}
+-------------------------------
+backtrack:
+#include <iostream>
+#include <vector>
+using namespace std;
+
+bool solve(vector<vector<int>>& board, int row, int col) {
+    // Base case: if we have filled all the rows of the board, return true
+    if (row == board.size()) {
+        return true;
+    }
+
+    // Check if we have reached the end of the current row, and move to the next row
+    if (col == board[0].size()) {
+        return solve(board, row + 1, 0);
+    }
+
+    // Try all possible choices for the current position
+    for (int i = 1; i <= 9; i++) {
+        // Check if the current choice is valid
+        if (isValid(board, row, col, i)) {
+            // Make the current choice
+            board[row][col] = i;
+
+            // Recursively solve the subproblem
+            if (solve(board, row, col + 1)) {
+                return true;
+            }
+
+            // Undo the current choice
+            board[row][col] = 0;
+        }
+    }
+
+    // If no choice leads to a valid solution, backtrack
+    return false;
+}
+
+int main() {
+    // Initialize the board
+    vector<vector<int>> board = {{0, 0, 0, 2, 6, 0, 7, 0, 1},
+                                 {6, 8, 0, 0, 7, 0, 0, 9, 0},
+                                 {1, 9, 0, 0, 0, 4, 5, 0, 0},
+                                 {8, 2, 0, 1, 0, 0, 0, 4, 0},
+                                 {0, 0, 4, 6, 0, 2, 9, 0, 0},
+                                 {0, 5, 0, 0, 0, 3, 0, 2, 8},
+                                 {0, 0, 9, 3, 0, 0, 0, 7, 4},
+                                 {0, 4, 0, 0, 5, 0, 0, 3, 6},
+                                 {7, 0, 3, 0, 1, 8, 0, 0, 0}};
+
+    // Solve the board using backtracking
+    if (solve(board, 0, 0)) {
+        // Print the solution
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board[0].size(); j++) {
+                cout << board[i][j] << " ";
+            }
+            cout << endl;
+        }
+    } else {
+        cout << "No solution found." << endl;
+    }
+
+    return 0;
+}
